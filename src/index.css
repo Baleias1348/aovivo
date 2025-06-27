@@ -1,0 +1,169 @@
+@tailwind base;
+    @tailwind components;
+    @tailwind utilities;
+
+    @layer base {
+      :root {
+        --background: 0 0% 100%; /* White */
+        --foreground: 224 71.4% 4.1%; /* Dark Blue/Black */
+
+        --card: 0 0% 100%; /* White */
+        --card-foreground: 224 71.4% 4.1%; /* Dark Blue/Black */
+     
+        --popover: 0 0% 100%; /* White */
+        --popover-foreground: 224 71.4% 4.1%; /* Dark Blue/Black */
+     
+        --primary: 210 80% 50%; /* Vibrant Blue */
+        --primary-foreground: 0 0% 98%; /* Light Gray/Almost White */
+     
+        --secondary: 260 70% 55%; /* Vibrant Purple */
+        --secondary-foreground: 0 0% 98%; /* Light Gray/Almost White */
+     
+        --muted: 220 14.3% 95.9%; /* Light Gray */
+        --muted-foreground: 220 8.9% 46.1%; /* Medium Gray */
+     
+        --accent: 30 90% 55%; /* Vibrant Orange */
+        --accent-foreground: 0 0% 98%; /* Light Gray/Almost White */
+     
+        --destructive: 0 72.2% 50.6%; /* Vibrant Red */
+        --destructive-foreground: 0 0% 98%; /* Light Gray/Almost White */
+
+        --border: 220 13% 91%; /* Light Gray Border */
+        --input: 220 13% 91%; /* Light Gray Input Border */
+        --ring: 210 80% 50%; /* Vibrant Blue for Focus Rings */
+     
+        --radius: 0.5rem;
+      }
+     
+      .dark {
+        --background: 224 71.4% 4.1%; /* Dark Blue/Black */
+        --foreground: 0 0% 98%; /* Light Gray/Almost White */
+
+        --card: 224 71.4% 4.1%; /* Dark Blue/Black */
+        --card-foreground: 0 0% 98%; /* Light Gray/Almost White */
+     
+        --popover: 224 71.4% 4.1%; /* Dark Blue/Black */
+        --popover-foreground: 0 0% 98%; /* Light Gray/Almost White */
+     
+        --primary: 210 80% 60%; /* Lighter Vibrant Blue for Dark Mode */
+        --primary-foreground: 0 0% 98%; 
+     
+        --secondary: 260 70% 65%; /* Lighter Vibrant Purple for Dark Mode */
+        --secondary-foreground: 0 0% 98%;
+     
+        --muted: 215 27.9% 16.9%; /* Darker Gray */
+        --muted-foreground: 217.9 10.6% 64.9%; /* Lighter Medium Gray */
+     
+        --accent: 30 90% 65%; /* Lighter Vibrant Orange for Dark Mode */
+        --accent-foreground: 0 0% 98%;
+     
+        --destructive: 0 62.8% 50.6%; /* Slightly Muted Red for Dark Mode */
+        --destructive-foreground: 0 0% 98%;
+     
+        --border: 215 27.9% 16.9%; /* Darker Gray Border */
+        --input: 215 27.9% 16.9%; /* Darker Gray Input Border */
+        --ring: 210 80% 60%; /* Lighter Vibrant Blue for Focus Rings */
+      }
+    }
+     
+    @layer base {
+      * {
+        @apply border-border;
+      }
+      body {
+        @apply bg-background text-foreground;
+        font-family: 'Inter', sans-serif;
+      }
+      h1, h2, h3, h4, h5, h6 {
+        @apply font-bold;
+      }
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    .tour-description-text p {
+      margin-bottom: 1em;
+    }
+    .tour-description-text ul, .tour-description-text ol {
+      margin-left: 1.5em;
+      margin-bottom: 1em;
+    }
+    .tour-description-text li {
+      margin-bottom: 0.5em;
+    }
+
+    .quill-editor-container .ql-toolbar {
+      border-top-left-radius: 0.375rem; 
+      border-top-right-radius: 0.375rem;
+      border-bottom: none;
+      background-color: #f8f9fa; 
+    }
+
+    .quill-editor-container .ql-container {
+      border-bottom-left-radius: 0.375rem;
+      border-bottom-right-radius: 0.375rem;
+      min-height: 200px; 
+      font-size: 1rem;
+      background-color: #ffffff;
+    }
+
+    .quill-editor-container .ql-editor {
+      padding: 12px 15px;
+      line-height: 1.6;
+      color: #212529; 
+    }
+
+    .quill-editor-container .ql-editor.ql-blank::before {
+      color: #6c757d; 
+      font-style: normal; 
+    }
+
+    .prose ul > li::marker {
+      color: var(--foreground);
+    }
+    .prose ol > li::marker {
+      color: var(--foreground);
+    }
+    .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+      color: var(--primary);
+    }
+    .prose a {
+      color: var(--primary);
+      text-decoration: underline;
+    }
+    .prose strong {
+      color: var(--foreground);
+    }
+    .prose blockquote {
+      border-left-color: var(--primary);
+      color: var(--muted-foreground);
+    }
+    .prose code {
+      background-color: var(--muted);
+      color: var(--foreground);
+      padding: 0.2em 0.4em;
+      border-radius: 0.25rem;
+    }
+    .prose pre {
+      background-color: var(--muted);
+      color: var(--foreground);
+    }
+    .prose img {
+      border-radius: var(--radius);
+    }
+    .prose hr {
+      border-color: var(--border);
+    }
+    .prose table th {
+      color: var(--foreground);
+      border-color: var(--border);
+    }
+    .prose table td {
+      border-color: var(--border);
+    }
+    .prose table thead {
+      border-bottom-color: var(--border);
+    }
+    .prose table tbody tr {
+      border-bottom-color: var(--border);
+    }
