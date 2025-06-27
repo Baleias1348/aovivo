@@ -1,31 +1,32 @@
 import React from 'react';
-    import { useLocation, Routes, Route, Navigate } from 'react-router-dom';
-    import Header from '@/components/layout/Header';
-    import Footer from '@/components/layout/Footer';
-    import HomePage from '@/pages/HomePage'; // Changed to HomePage
-    import LandingPageChile from '@/pages/LandingPageChile'; // The old HomePage
-    import ToursPage from '@/pages/ToursPage';
-    import TourDetailPage from '@/pages/TourDetailPage';
-    import RestaurantsPage from '@/pages/RestaurantsPage';
-    import SkiCentersPage from '@/pages/SkiCentersPage';
-    import SkiCenterDetailPage from '@/pages/SkiCenterDetailPage';
-    import ContactPage from '@/pages/ContactPage';
-    import AdminPage from '@/pages/AdminPage';
-    import AdminLoginPage from '@/pages/AdminLoginPage';
-    import AdminUpdatePasswordPage from '@/pages/AdminUpdatePasswordPage';
-    import ProtectedRoute from '@/components/auth/ProtectedRoute';
-    import WhatsAppButton from '@/components/shared/WhatsAppButton';
-    import { Toaster } from '@/components/ui/toaster';
+import { useLocation, Routes, Route, Navigate } from 'react-router-dom';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
+import HomePage from '@/pages/HomePage'; // Changed to HomePage
+import LandingPageChile from '@/pages/LandingPageChile'; // The old HomePage
+import ClimaNoChile from '@/pages/ClimaNoChile';
+import ToursPage from '@/pages/ToursPage';
+import TourDetailPage from '@/pages/TourDetailPage';
+import RestaurantsPage from '@/pages/RestaurantsPage';
+import SkiCentersPage from '@/pages/SkiCentersPage';
+import SkiCenterDetailPage from '@/pages/SkiCenterDetailPage';
+import ContactPage from '@/pages/ContactPage';
+import AdminPage from '@/pages/AdminPage';
+import AdminLoginPage from '@/pages/AdminLoginPage';
+import AdminUpdatePasswordPage from '@/pages/AdminUpdatePasswordPage';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
+import WhatsAppButton from '@/components/shared/WhatsAppButton';
+import { Toaster } from '@/components/ui/toaster';
 
-    const MainLayout = () => {
-        const location = useLocation();
-        const whatsappContactNumber = "+15557538771"; 
-        const landingPageTourId = "c106e798-ee8b-4cb2-aa8a-aa7ff42997ce"; // Example, might not be used if HomePage is the new index
+const MainLayout = () => {
+    const location = useLocation();
+    const whatsappContactNumber = "+15557538771"; 
+    const landingPageTourId = "c106e798-ee8b-4cb2-aa8a-aa7ff42997ce"; 
 
-        const isTourLandingPage = location.pathname.includes(`/tours/`) && new URLSearchParams(location.search).get('landing') === 'true';
-        const isSkiCenterDetailPage = location.pathname.startsWith('/centros-de-esqui/') && location.pathname.split('/').length > 2;
-        
-        const tourNameForWhatsApp = location.state?.tourNameForWhatsApp || null;
+    const isTourLandingPage = location.pathname.includes(`/tours/`) && new URLSearchParams(location.search).get('landing') === 'true';
+    const isSkiCenterDetailPage = location.pathname.startsWith('/centros-de-esqui/') && location.pathname.split('/').length > 2;
+    
+    const tourNameForWhatsApp = location.state?.tourNameForWhatsApp || null;
 
         // Condition for hiding header
         let hideHeader = false;
@@ -66,7 +67,7 @@ import React from 'react';
                             }
                         />
                         {/* Placeholder routes for quick access icons, to be implemented later */}
-                        <Route path="/clima" element={<div>Página de Clima (em construção)</div>} />
+                        <Route path="/clima" element={<ClimaNoChile />} />
                         <Route path="/cambio" element={<div>Página de Câmbio (em construção)</div>} />
                         <Route path="/voos" element={<div>Página de Voos (em construção)</div>} />
                         <Route path="/emergencias" element={<div>Página de Emergências (em construção)</div>} />

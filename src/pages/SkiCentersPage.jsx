@@ -38,7 +38,7 @@ const SkiCenterCard = ({ skiCenter }) => {
             <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 h-full flex flex-col bg-card border border-border/50 hover:border-primary/50">
                 <div className="relative h-56 w-full">
                     {skiCenter.mainImageUrl ? (
-                        <img-replace src={skiCenter.mainImageUrl} alt={`Imagem de ${skiCenter.name}`} className="w-full h-full object-cover" />
+                        <img src={skiCenter.mainImageUrl} alt={`Imagem de ${skiCenter.name}`} className="w-full h-full object-cover" />
                     ) : (
                         <div className="w-full h-full bg-gradient-to-br from-muted via-card to-muted flex items-center justify-center text-muted-foreground">
                             <MountainSnow className="w-16 h-16 opacity-70" />
