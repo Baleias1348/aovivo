@@ -18,8 +18,9 @@ import React from 'react';
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
                         <div className="space-y-4">
                             <Link to="/" className="flex items-center gap-2">
-                                <Plane className="h-7 w-7 text-primary" />
-                                <span className="font-bold text-xl text-primary">Vibe Chile</span>
+                                {/* Estrella SVG blanca igual que en el header */}
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="white" stroke="white" strokeWidth="0.5" strokeLinejoin="round" style={{marginRight: 2, marginLeft: -6, marginTop: 2}}><polygon points="12,2 14.09,8.26 20.82,8.27 15.36,12.14 17.45,18.4 12,14.53 6.55,18.4 8.64,12.14 3.18,8.27 9.91,8.26 "/></svg>
+                                <span className="font-bold text-xl text-primary uppercase tracking-wide"><span style={{position:'relative'}}>C</span>hile ao Vivo</span>
                             </Link>
                             <p className="text-sm">
                                 Sua aventura começa aqui. Explore as maravilhas do Chile conosco.

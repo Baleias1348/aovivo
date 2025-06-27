@@ -1,7 +1,39 @@
 import React from 'react';
 import { useLocation, Routes, Route, Navigate } from 'react-router-dom';
-import Header from '@/components/layout/Header';
+
 import Footer from '@/components/layout/Footer';
+
+// Header minimalista global
+import { Link } from 'react-router-dom';
+
+const MinimalHeader = () => (
+  <header
+    style={{
+      height: 60,
+      background: 'linear-gradient(90deg, #000 0%, #601889 100%)',
+      color: '#fff',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'flex-start',
+      width: '100%',
+      fontFamily: 'Arial Black, Arial, sans-serif',
+      fontSize: 28,
+      letterSpacing: 1.5,
+      fontWeight: 800,
+      textShadow: '0 1px 8px #000a',
+      zIndex: 50,
+      position: 'relative',
+      boxShadow: '0 2px 12px #0002',
+      userSelect: 'none',
+    }}
+  >
+    <Link to="/" style={{display: 'flex', alignItems: 'center', color: '#fff', textDecoration: 'none', gap: 8, paddingLeft: 16, paddingRight: 16, height: '100%'}}>
+      {/* Estrella SVG blanca */}
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="white" stroke="white" strokeWidth="0.5" strokeLinejoin="round" style={{marginRight: 2, marginLeft: -6, marginTop: 2}}><polygon points="12,2 14.09,8.26 20.82,8.27 15.36,12.14 17.45,18.4 12,14.53 6.55,18.4 8.64,12.14 3.18,8.27 9.91,8.26 "/></svg>
+      <span style={{textTransform: 'uppercase', letterSpacing: 2}}><span style={{position:'relative'}}>C</span>hile ao Vivo</span>
+    </Link>
+  </header>
+);
 import HomePage from '@/pages/HomePage'; // Changed to HomePage
 import LandingPageChile from '@/pages/LandingPageChile'; // The old HomePage
 import ClimaNoChile from '@/pages/ClimaNoChile';
@@ -28,22 +60,13 @@ const MainLayout = () => {
     
     const tourNameForWhatsApp = location.state?.tourNameForWhatsApp || null;
 
-        // Condition for hiding header
-        let hideHeader = false;
-        if ((isTourLandingPage) || isSkiCenterDetailPage) {
-            hideHeader = true;
-        }
-        // The new HomePage ('/') should show the header.
-        // LandingPageChile ('/home-original') might or might not show header based on its own logic or if it's considered a landing.
-        // For now, explicitly show header on '/' and let other logic apply.
-        if (location.pathname === '/') {
-            hideHeader = false;
-        }
+
 
 
         return (
             <div className="flex flex-col min-h-screen">
-                {!hideHeader && <Header />}
+                <MinimalHeader />
+
                 <main className="flex-grow">
                     <Routes>
                         <Route path="/" element={<HomePage />} /> {/* New Home Page as index */}

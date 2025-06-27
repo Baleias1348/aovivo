@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -71,7 +72,7 @@ const NewsTicker = ({ tickerData }) => {
                     x: {
                         repeat: Infinity,
                         repeatType: "loop",
-                        duration: 66, 
+                        duration: 124, // 20% más lento
                         ease: "linear",
                     },
                 }}
@@ -79,82 +80,19 @@ const NewsTicker = ({ tickerData }) => {
                 {tickerContent.map((item, index) => (
                     <TickerItem key={index} icon={item.icon} text={item.text} highlight={item.highlight} />
                 ))}
-                 {tickerContent.map((item, index) => (
-                    <TickerItem key={`dup-${index}`} icon={item.icon} text={item.text} highlight={item.highlight} />
-                ))}
+
             </motion.div>
         </div>
     );
 };
 
-const HeroCarousel = ({ images }) => {
-    const [currentIndex, setCurrentIndex] = useState(0);
+export default function HomePage() {
+    const heroImage = "https://i.imgur.com/Rct8VB8.png";
+    const heroAlt = "Chile ao Vivo";
 
-    useEffect(() => {
-        if (!images || images.length === 0) return;
-        const timer = setTimeout(() => {
-            setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-        }, 5000); 
-        return () => clearTimeout(timer);
-    }, [currentIndex, images]);
-
-    if (!images || images.length === 0) {
-        return (
-             <div className="relative h-[calc(100vh-120px)] md:h-[calc(100vh-100px)] flex items-center justify-center text-center bg-gray-300">
-                <p>Nenhuma imagem configurada para o carrossel.</p>
-            </div>
-        );
-    }
-    
-    return (
-        <div className="relative h-[calc(100vh-120px)] md:h-[calc(100vh-100px)] overflow-hidden">
-            <AnimatePresence initial={false}>
-                <motion.div
-                    key={currentIndex}
-                    initial={{ opacity: 0, x: 300 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -300 }}
-                    transition={{ duration: 0.8, ease: "easeInOut" }}
-                    className="absolute inset-0"
-                >
-                    <img-replace 
-                        className="object-cover w-full h-full"
-                        alt={images[currentIndex].alt || `Slide ${currentIndex + 1}`}
-                        src={images[currentIndex].src || "https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1470&auto=format&fit=crop"} />
-                </motion.div>
-            </AnimatePresence>
-            <div className="absolute inset-0 bg-black/30 z-0"></div> 
-            <div className="relative z-10 flex flex-col items-center justify-end h-full pb-20 md:pb-24 text-center text-white p-4">
-                <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                >
-                    <Button size="lg" asChild className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground shadow-lg transition-all duration-300 hover:scale-105 px-10 py-6 text-lg">
-                        <Link to="/tours">Explore Nossos Passeios</Link>
-                    </Button>
-                </motion.div>
-            </div>
-        </div>
-    );
-};
-
-const QuickAccessButton = ({ icon: Icon, label, onClick }) => (
-    <motion.div
-        whileHover={{ y: -5, scale: 1.05 }}
-        className="flex flex-col items-center space-y-2 cursor-pointer group"
-        onClick={onClick}
-    >
-        <div className="p-4 bg-primary/10 rounded-full group-hover:bg-primary/20 transition-colors">
-            <Icon className="h-8 w-8 text-primary" />
-        </div>
-        <span className="text-sm font-medium text-muted-foreground group-hover:text-primary transition-colors">{label}</span>
-    </motion.div>
-);
-
-const HomePage = () => {
+    const navigate = useNavigate();
     const [featuredTours, setFeaturedTours] = useState([]);
-    const [siteConfigData, setSiteConfigData] = useState(getSiteConfig()); // Renamed to avoid conflict
+    const [siteConfigData, setSiteConfigData] = useState(getSiteConfig());
     const [isLoadingTours, setIsLoadingTours] = useState(true);
     const [tickerData, setTickerData] = useState([]);
 
@@ -163,202 +101,168 @@ const HomePage = () => {
     }, []);
 
     useEffect(() => {
-        fetchSiteConfig(); // Fetch on mount
-
-        const handleStorageChange = (event) => {
-            if (event.key === 'vibechile-site-config') {
-                fetchSiteConfig(); // Re-fetch on storage change
-            }
-        };
-        window.addEventListener('storage', handleStorageChange);
-        
+        fetchSiteConfig();
+        // Cargar datos del ticker
         const fetchTickerData = async () => {
             const { data, error } = await supabase.from('ticker_data').select('*');
             if (error) {
                 console.error('Erro ao buscar dados do ticker:', error);
+                setTickerData([]);
             } else {
                 setTickerData(data);
             }
         };
-
+        // Cargar tours destacados
         const fetchFeaturedTours = async () => {
             setIsLoadingTours(true);
             try {
                 const allTours = await getAllTours();
                 if (Array.isArray(allTours)) {
-                    setFeaturedTours(allTours); 
+                    setFeaturedTours(allTours);
                 } else {
-                    console.error("getAllTours did not return an array:", allTours);
                     setFeaturedTours([]);
                 }
-            } catch (error) {
-                console.error("Error fetching tours for HomePage:", error);
+            } catch (e) {
                 setFeaturedTours([]);
             } finally {
                 setIsLoadingTours(false);
             }
         };
-
         fetchTickerData();
         fetchFeaturedTours();
-        
-        return () => {
-            window.removeEventListener('storage', handleStorageChange);
-        };
     }, [fetchSiteConfig]);
 
-    const heroImages = [
-        { src: siteConfigData.heroImage1, alt: siteConfigData.heroAlt1 },
-        { src: siteConfigData.heroImage2, alt: siteConfigData.heroAlt2 },
-        { src: siteConfigData.heroImage3, alt: siteConfigData.heroAlt3 },
-    ].filter(img => img.src && img.src.trim() !== '');
-
-    const quickAccessItems = [
-        { icon: Thermometer, label: "Clima", link: "/clima" },
-        { icon: Banknote, label: "Câmbio", link: "/cambio" },
-        { icon: Landmark, label: "Gastronomia", link: "/restaurantes-santiago" },
-        { icon: Briefcase, label: "Voos", link: "/voos" },
-        { icon: AlertTriangle, label: "Emergências", link: "/emergencias" },
-        { icon: Map, label: "Mapas Úteis", link: "/mapas" }, // New Icon
-        { icon: Newspaper, label: "Notícias", link: "/noticias" }, // New Icon
-    ];
-
-    const infoCards = [
-        { title: "Pronóstico del Clima", description: "Detalhes do clima para planejar sua viagem.", icon: CloudRain, link: "/clima-detalhado", sim: true },
-        { title: "Conversor de Moeda", description: "Calcule o câmbio em tempo real.", icon: Replace, link: "/conversor-moeda", sim: true },
-        { title: "Centros de Ski", description: "Aventura na neve nos melhores picos.", icon: MountainSnow, link: "/centros-de-esqui" },
-        { title: "Restaurantes", description: "Sabores do Chile: guia gastronômico.", icon: Landmark, link: "/restaurantes-santiago" },
-    ];
-
-    const simulatedTours = [
-        { id: "sim1", nameLine1: "Aventura", nameLine2:"no Deserto", location: "Atacama, Chile", duration: "3 dias", pricePerAdult: 1200, description: "Explore as paisagens lunares do deserto mais árido do mundo.", image: "https://images.unsplash.com/photo-1508094361382-5f7c69a863c9?q=80&w=1470&auto=format&fit=crop" },
-        { id: "sim2", nameLine1: "Patagônia", nameLine2:"Selvagem", location: "Torres del Paine, Chile", duration: "5 dias", pricePerAdult: 2500, description: "Caminhe por trilhas icônicas e admire glaciares imponentes.", image: "https://images.unsplash.com/photo-1529973568089-a1968960c675?q=80&w=1470&auto=format&fit=crop" },
-        { id: "sim3", nameLine1: "Vinhos & Vales", nameLine2:"Experiência", location: "Vale de Colchagua", duration: "1 dia", pricePerAdult: 350, description: "Deguste vinhos premiados em vinícolas charmosas.", image: "https://images.unsplash.com/photo-1506377295352-e3154d43ea9e?q=80&w=1470&auto=format&fit=crop" },
-    ];
-
-    const toursToShow = [...featuredTours, ...simulatedTours.slice(0, Math.max(0, 4 - featuredTours.length))].slice(0, 4);
-
     return (
-        <div className="bg-background">
+        <div className="bg-white min-h-screen w-full">
+            {/* HERO BANNER */}
+            <div className="relative w-full overflow-hidden aspect-[21/9] max-h-[400px]" style={{height: 'auto'}}>
+                <img
+                    className="object-cover w-full h-full max-h-[400px] sm:rounded-xl"
+                    alt={heroAlt}
+                    src={heroImage}
+                    style={{width: '100%', height: '100%', maxHeight: 400}}
+                />
+                <div className="absolute inset-0 bg-black/30 z-0"></div>
+            </div>
+            {/* TICKER */}
             <NewsTicker tickerData={tickerData} />
-            <HeroCarousel images={heroImages.length > 0 ? heroImages : [{src: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1470&auto=format&fit=crop", alt: "Paisagem Padrão"}] } />
 
-            <section className="container py-12 md:py-16">
-                <div className="flex justify-center items-center flex-wrap gap-x-8 gap-y-10 md:gap-x-12">
-                    {quickAccessItems.map(item => (
-                        <Link to={item.link} key={item.label}>
-                             <QuickAccessButton icon={item.icon} label={item.label} />
-                        </Link>
-                    ))}
+            {/* ACCESOS RÁPIDOS */}
+            <nav className="w-full h-[70px] flex items-center justify-center gap-4 md:gap-8 bg-[#1238f5]">
+                <button onClick={()=>navigate('/clima-no-chile')} className="flex flex-col items-center text-white hover:text-yellow-200 focus:outline-none">
+                    <Thermometer className="w-7 h-7"/>
+                    <span className="text-xs mt-1">Clima</span>
+                </button>
+                <button onClick={()=>navigate('/converter-reais-em-pesos-chilenos')} className="flex flex-col items-center text-white hover:text-yellow-200 focus:outline-none">
+                    <Banknote className="w-7 h-7"/>
+                    <span className="text-xs mt-1">Conversor</span>
+                </button>
+                <button onClick={()=>navigate('/restaurantes-santiago')} className="flex flex-col items-center text-white hover:text-yellow-200 focus:outline-none">
+                    <Landmark className="w-7 h-7"/>
+                    <span className="text-xs mt-1">Guia Gastronômico</span>
+                </button>
+                <button onClick={()=>navigate('/centros-de-esqui')} className="flex flex-col items-center text-white hover:text-yellow-200 focus:outline-none">
+                    <MountainSnow className="w-7 h-7"/>
+                    <span className="text-xs mt-1">Centros de Esqui</span>
+                </button>
+                <div className="flex flex-col items-center text-white opacity-60">
+                    <Briefcase className="w-7 h-7"/>
+                    <span className="text-xs mt-1">Estado do Voo</span>
                 </div>
-            </section>
-
-            <section className="container py-8 md:py-12">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-                    {infoCards.map((card, index) => (
-                        <motion.div
-                            key={index}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true, amount: 0.2 }}
-                            transition={{ duration: 0.5, delay: index * 0.1 }}
-                        >
-                            <Card className="h-full flex flex-col hover:shadow-lg transition-shadow duration-300">
-                                <CardHeader className="items-center text-center">
-                                    <div className="p-3 bg-primary/10 rounded-full mb-2">
-                                        <card.icon className="h-8 w-8 text-primary" />
-                                    </div>
-                                    <CardTitle className="text-lg">{card.title}</CardTitle>
-                                </CardHeader>
-                                <CardContent className="text-center flex-grow">
-                                    <p className="text-sm text-muted-foreground mb-4">{card.description}</p>
-                                </CardContent>
-                                <div className="p-4 pt-0 text-center">
-                                    <Button asChild variant="outline" className="w-full">
-                                        <Link to={card.link}>{card.sim ? "Saiba Mais (Simulado)" : "Explorar"}</Link>
-                                    </Button>
-                                </div>
-                            </Card>
-                        </motion.div>
-                    ))}
+                <div className="flex flex-col items-center text-white opacity-60">
+                    <AlertTriangle className="w-7 h-7"/>
+                    <span className="text-xs mt-1">Emergência</span>
                 </div>
-            </section>
-            
-            <section className="container py-8 md:py-12">
-                <Card className="bg-card shadow-xl border">
-                    <CardHeader>
-                        <CardTitle className="text-2xl md:text-3xl text-center text-primary">Passeios em Destaque</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                         {isLoadingTours ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-                                {Array.from({ length: 4 }).map((_, index) => (
-                                    <TourCardSkeleton key={index} />
-                                ))}
-                            </div>
-                         ) : toursToShow.length > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-                                {toursToShow.map((tour, index) => (
-                                     <motion.div
-                                        key={tour.id || `sim-${index}`}
-                                        initial={{ opacity: 0, y: 50 }}
-                                        whileInView={{ opacity: 1, y: 0 }}
-                                        viewport={{ once: true, amount: 0.2 }}
-                                        transition={{ duration: 0.5, delay: index * 0.1 }}
-                                    >
-                                        <TourCard tour={tour} />
-                                    </motion.div>
-                                ))}
-                            </div>
-                         ) : (
-                            <p className="text-center text-muted-foreground py-8">Nenhum passeio em destaque disponível no momento.</p>
-                         )}
-                    </CardContent>
-                </Card>
-            </section>
+            </nav>
 
-            <section className="container py-8 md:py-12">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                    <motion.div
-                        initial={{ opacity: 0, x: -50 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true, amount: 0.2 }}
-                        transition={{ duration: 0.6 }}
-                    >
-                        <Card className="overflow-hidden h-full hover:shadow-lg transition-shadow duration-300 flex flex-col">
-                            <div className="aspect-[16/9] w-full overflow-hidden">
-                                <img-replace src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1470&auto=format&fit=crop" alt="Pessoas em reunião de negócios planejando investimento" className="w-full h-full object-cover" />
-                            </div>
-                            <CardContent className="p-6 flex-grow flex flex-col">
-                                <h3 className="text-xl font-semibold mb-2 text-primary">Invista no Chile</h3>
-                                <p className="text-muted-foreground mb-4 flex-grow">Saiba como investir no Chile passo a passo. Oportunidades e guias.</p>
-                                <Button variant="link" asChild className="mt-auto self-start px-0"><Link to="/investir-chile">Leia Mais &rarr;</Link></Button>
-                            </CardContent>
-                        </Card>
-                    </motion.div>
-                    <motion.div
-                        initial={{ opacity: 0, x: 50 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true, amount: 0.2 }}
-                        transition={{ duration: 0.6 }}
-                    >
-                        <Card className="overflow-hidden h-full hover:shadow-lg transition-shadow duration-300 flex flex-col">
-                            <div className="aspect-[16/9] w-full overflow-hidden">
-                                <img-replace src="https://images.unsplash.com/photo-1558464876-94cf36537234?q=80&w=1374&auto=format&fit=crop" alt="Prato de mariscos chilenos frescos" className="w-full h-full object-cover" />
-                            </div>
-                            <CardContent className="p-6 flex-grow flex flex-col">
-                                <p className="text-sm font-semibold text-secondary mb-1">Reportagem Destacada</p>
-                                <h3 className="text-xl font-semibold mb-2 text-primary">O Sabor dos Mariscos Chilenos</h3>
-                                <p className="text-muted-foreground mb-4 flex-grow">Uma imersão na rica culinária costeira do Chile.</p>
-                                <Button variant="link" asChild className="mt-auto self-start px-0"><Link to="/blog/mariscos-chilenos">Leia Mais &rarr;</Link></Button>
-                            </CardContent>
-                        </Card>
-                    </motion.div>
+            {/* BOX MODELS (Clima, Cambio, Estado do voo) */}
+            <section className="w-full flex flex-col md:flex-row gap-6 px-4 md:px-12 mt-8 mb-12">
+                {/* CLIMA AO VIVO */}
+                <div className="bg-white rounded-xl shadow-xl border border-gray-200 flex-1 min-w-[320px] max-w-[600px] p-4 flex flex-col" style={{minHeight: 420}}>
+                    <h2 className="text-[#0c37e6] font-bold text-lg md:text-xl mb-4 font-arial">Clima ao vivo</h2>
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                        {/* Santiago */}
+                        <div className="bg-[#0c37e6] rounded-lg flex flex-col items-center justify-center p-3 text-white shadow-md">
+                            <Sun className="w-8 h-8 mb-1"/>
+                            <span className="font-bold text-base">Santiago</span>
+                            <span className="text-2xl font-bold">{tickerData.find(d => d.id === 'weather_santiago')?.content || '--º'}</span>
+                            <span className="text-xs">Soleado</span>
+                        </div>
+                        {/* Viña del Mar */}
+                        <div className="bg-[#0c37e6] rounded-lg flex flex-col items-center justify-center p-3 text-white shadow-md">
+                            <Cloud className="w-8 h-8 mb-1"/>
+                            <span className="font-bold text-base">Viña del Mar</span>
+                            <span className="text-2xl font-bold">{tickerData.find(d => d.id === 'weather_vina')?.content || '--º'}</span>
+                            <span className="text-xs">Nublado</span>
+                        </div>
+                        {/* Valparaíso */}
+                        <div className="bg-[#0c37e6] rounded-lg flex flex-col items-center justify-center p-3 text-white shadow-md">
+                            <CloudRain className="w-8 h-8 mb-1"/>
+                            <span className="font-bold text-base">Valparaíso</span>
+                            <span className="text-2xl font-bold">{tickerData.find(d => d.id === 'weather_valparaiso')?.content || '--º'}</span>
+                            <span className="text-xs">Chuva</span>
+                        </div>
+                        {/* Concepción */}
+                        <div className="bg-[#0c37e6] rounded-lg flex flex-col items-center justify-center p-3 text-white shadow-md">
+                            <Cloud className="w-8 h-8 mb-1"/>
+                            <span className="font-bold text-base">Concepción</span>
+                            <span className="text-2xl font-bold">{tickerData.find(d => d.id === 'weather_concepcion')?.content || '--º'}</span>
+                            <span className="text-xs">Nublado</span>
+                        </div>
+                    </div>
+                    <button className="w-full mt-2 py-2 rounded-lg bg-[#0c37e6] text-white font-bold hover:bg-[#0c37e6]/90 transition" onClick={()=>navigate('/clima-no-chile')}>
+                        Veja a previsão para os próximos 5 dias
+                    </button>
+                </div>
+                {/* TAXAS DE CÂMBIO HOJE */}
+                <div className="bg-white rounded-xl shadow-xl border border-gray-200 flex flex-col min-w-[220px] max-w-[300px] p-4" style={{height: 420}}>
+                    <h2 className="text-[#0c37e6] font-bold text-lg md:text-xl mb-4 font-arial">Taxas de câmbio hoje</h2>
+                    {/* CLP → BRL */}
+                    <div className="bg-[#05882f] text-white rounded-lg flex flex-col items-center justify-center p-3 mb-3 shadow-md">
+                        <span className="font-bold text-base flex items-center gap-2"><img src="https://flagcdn.com/br.svg" alt="BR" className="w-5 h-5 inline"/> 1 BRL = {tickerData.find(d => d.id === 'currency_brl_clp')?.content || '--'} CLP</span>
+                        <a href="/converter-reais-em-pesos-chilenos" className="underline text-xs mt-1">Vá para o conversor de moedas</a>
+                    </div>
+                    {/* BRL → CLP */}
+                    <div className="bg-[#05882f] text-white rounded-lg flex flex-col items-center justify-center p-3 mb-3 shadow-md">
+                        <span className="font-bold text-base flex items-center gap-2"><img src="https://flagcdn.com/cl.svg" alt="CL" className="w-5 h-5 inline"/> 1 CLP = {tickerData.find(d => d.id === 'currency_clp_brl')?.content || '--'} BRL</span>
+                        <a href="/converter-reais-em-pesos-chilenos" className="underline text-xs mt-1">Vá para o conversor de moedas</a>
+                    </div>
+                    {/* Casas de Câmbio */}
+                    <div className="bg-[#05882f] text-white rounded-lg flex flex-col items-center justify-center p-4 mb-3 shadow-md cursor-pointer hover:bg-[#047a28] transition" onClick={()=>alert('Em breve!')}>
+                        <span className="font-bold text-base">Casas de Câmbio</span>
+                        <span className="text-xs mt-1">Classificação com avaliações reais</span>
+                    </div>
+                </div>
+                {/* ESTADO DO VOO */}
+                <div className="bg-white rounded-xl shadow-xl border border-gray-200 flex flex-col min-w-[220px] max-w-[300px] p-4" style={{height: 420}}>
+                    <h2 className="text-[#0c37e6] font-bold text-lg md:text-xl mb-4 font-arial">Estado do voo</h2>
+                    {/* LATAM */}
+                    <div className="bg-[#0c37e6] text-white rounded-lg flex flex-col items-center justify-center p-3 mb-3 shadow-md">
+                        <span className="font-bold text-base">Voos da Latam Airlines</span>
+                        <div className="flex gap-2 mt-2">
+                            <button className="bg-white text-[#0c37e6] font-bold px-2 py-1 rounded shadow hover:bg-gray-100 text-xs" onClick={()=>alert('Em breve!')}>voos do Brasil para o Chile</button>
+                            <button className="bg-white text-[#0c37e6] font-bold px-2 py-1 rounded shadow hover:bg-gray-100 text-xs" onClick={()=>alert('Em breve!')}>voos do Chile para o Brasil</button>
+                        </div>
+                    </div>
+                    {/* SKY */}
+                    <div className="bg-[#0c37e6] text-white rounded-lg flex flex-col items-center justify-center p-3 mb-3 shadow-md">
+                        <span className="font-bold text-base">Voos da Sky Airlines</span>
+                        <div className="flex gap-2 mt-2">
+                            <button className="bg-white text-[#0c37e6] font-bold px-2 py-1 rounded shadow hover:bg-gray-100 text-xs" onClick={()=>alert('Em breve!')}>voos do Brasil para o Chile</button>
+                            <button className="bg-white text-[#0c37e6] font-bold px-2 py-1 rounded shadow hover:bg-gray-100 text-xs" onClick={()=>alert('Em breve!')}>voos do Chile para o Brasil</button>
+                        </div>
+                    </div>
+                    {/* Jetsmart */}
+                    <div className="bg-[#0c37e6] text-white rounded-lg flex flex-col items-center justify-center p-3 mb-3 shadow-md">
+                        <span className="font-bold text-base">Voos da Jetsmart</span>
+                        <div className="flex gap-2 mt-2">
+                            <button className="bg-white text-[#0c37e6] font-bold px-2 py-1 rounded shadow hover:bg-gray-100 text-xs" onClick={()=>alert('Em breve!')}>voos do Brasil para o Chile</button>
+                            <button className="bg-white text-[#0c37e6] font-bold px-2 py-1 rounded shadow hover:bg-gray-100 text-xs" onClick={()=>alert('Em breve!')}>voos do Chile para o Brasil</button>
+                        </div>
+                    </div>
                 </div>
             </section>
 
         </div>
     );
-};
-
-export default HomePage;
+}

@@ -51,7 +51,7 @@ const GallerySection = ({ galleryUrls, skiCenterName }) => {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
                 {galleryUrls.map((url, index) => (
                     <div key={index} className="rounded-lg overflow-hidden shadow-md border aspect-square">
-                        <img-replace 
+                        <img 
                             src={url} 
                             alt={`${skiCenterName} - Imagem da galeria ${index + 1}`} 
                             className="w-full h-full object-cover transition-transform duration-300 hover:scale-105" 
@@ -159,7 +159,7 @@ const SkiCenterDetailPage = () => {
                 {/* Hero Section */}
                 <section className="relative h-[40vh] md:h-[50vh] text-white flex flex-col justify-center items-center text-center">
                     <div className="absolute inset-0 z-0">
-                        <img-replace
+                        <img
                             src={skiCenter.mainImageUrl || 'https://images.unsplash.com/photo-1549788018-908599281086?q=80&w=1470&auto=format&fit=crop'}
                             alt={`Vista panorâmica de ${skiCenter.name}`}
                             className="w-full h-full object-cover"
@@ -184,12 +184,14 @@ const SkiCenterDetailPage = () => {
                 {/* Main content with padding to account for potentially hidden header */}
                 <div className="container mx-auto px-4 py-8 md:py-12">
                                         
-                    <DetailSection title="Sobre o Centro" content={skiCenter.generalDescription} icon={Info} delay={0.1} isHtml={true} />
-                    <DetailSection title="Perfil e Pistas" content={skiCenter.profileAndTracks} icon={MountainSnow} delay={0.2} isHtml={true} />
-                    <DetailSection title="A Experiência Única" content={skiCenter.uniqueExperience} icon={MapPin} delay={0.3} isHtml={true} />
-                    <DetailSection title="Dicas Valiosas" content={skiCenter.valuableTips} icon={Info} delay={0.4} isHtml={true} />
-                    <DetailSection title="Informações Práticas" content={skiCenter.practicalInfo} icon={Info} delay={0.5} isHtml={true} />
-                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <DetailSection title="Sobre o Centro" content={skiCenter.generalDescription} icon={Info} delay={0.1} isHtml={true} />
+                        <DetailSection title="Perfil e Pistas" content={skiCenter.profileAndTracks} icon={MountainSnow} delay={0.2} isHtml={true} />
+                        <DetailSection title="A Experiência Única" content={skiCenter.uniqueExperience} icon={MapPin} delay={0.3} isHtml={true} />
+                        <DetailSection title="Dicas Valiosas" content={skiCenter.valuableTips} icon={Info} delay={0.4} isHtml={true} />
+                        <DetailSection title="Informações Práticas" content={skiCenter.practicalInfo} icon={Info} delay={0.5} isHtml={true} />
+                    </div>
+
                     <GallerySection galleryUrls={skiCenter.galleryUrls} skiCenterName={skiCenter.name} />
 
                     {skiCenter.websiteUrl && (
